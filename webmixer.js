@@ -7,7 +7,7 @@ const init = (
   auxs,
   supportedChannels,
   serverPort,
-  mapping,
+  mapping
 ) => {
   /**
    * The list of aux channels
@@ -120,7 +120,7 @@ const init = (
 	*/
   const loadingProgress = new cliProgress.SingleBar(
     {},
-    cliProgress.Presets.shades_classic,
+    cliProgress.Presets.shades_classic
   );
 
   // Bind to a UDP socket to listen for incoming OSC events.
@@ -137,7 +137,7 @@ const init = (
 
   let loadingAddresses = mapping.getLoadingAddresses(
     auxList,
-    supportedChannels,
+    supportedChannels
   );
 
   udpPort.on("ready", function () {
@@ -152,7 +152,7 @@ const init = (
       udpPort.off("message", loadingMessages);
       udpPort.on("message", loadedMessages);
 
-      startWebSocketServer();
+      startServer();
       return;
     }
 
@@ -196,7 +196,7 @@ const init = (
       udpPort.off("message", loadingMessages);
       udpPort.on("message", loadedMessages);
 
-      startWebSocketServer();
+      startServer();
 
       return;
     }
@@ -266,7 +266,7 @@ const init = (
     return totalLoadedParams;
   }
 
-  function startWebSocketServer() {
+  function startWebAppServer() {
     // Create an Express-based Web Socket server that clients can connect to
     let appResources = __dirname + "/web",
       app = express();
@@ -275,8 +275,12 @@ const init = (
 
     app.use("/", express.static(appResources));
 
-    let wss = new WebSocket.Server({
-      server: server,
+    return server;
+  }
+
+  function startWebSocketServer(server) {
+    const wss = new WebSocket.Server({
+      server,
     });
 
     wss.on("connection", function (socket) {
@@ -319,7 +323,7 @@ const init = (
             JSON.stringify({
               "aux?": msg["aux?"],
               channels: channelValues,
-            }),
+            })
           );
 
           return;
@@ -339,13 +343,19 @@ const init = (
     wss.on("error", function (err) {
       console.debug("wss error", err);
     });
+  }
+
+  function startServer() {
+    let server = startWebAppServer();
+
+    startWebSocketServer(server);
 
     console.log(
       "\n\nServer Ready.\nVisit http://" +
         ipAddresses[0] +
         ":" +
         serverPort +
-        " in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network.",
+        " in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network."
     );
   }
 
