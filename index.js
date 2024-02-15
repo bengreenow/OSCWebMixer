@@ -34,7 +34,7 @@ if (config.has("desk.type")) {
 }
 
 console.log("Loading DiGiCo " + type + " configuration");
-import("./mapping/" + type.toUpperCase() + "-mapping.mjs").then(
+import("./mapping/" + type.toUpperCase() + "-mapping.js").then(
   (mappingModule) => {
     webmixer.init(
       config.get("desk.send_port"),

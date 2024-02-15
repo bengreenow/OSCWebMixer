@@ -9,6 +9,10 @@
     "type": "git",
     "url": "git://github.com/"
   },
+  "scripts": {
+    "start": "node .",
+    "start:dev": "node . skip"
+  },
   "license": "MIT",
   "keywords": [
     "Open Sound Control",
