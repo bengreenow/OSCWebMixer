@@ -43,7 +43,7 @@ function requestValues() {
   ws.send(
     JSON.stringify({
       "aux?": auxSelect.options[auxSelect.selectedIndex].dataset.channel,
-    }),
+    })
   );
 }
 
@@ -79,7 +79,7 @@ function onMessage(e) {
     }
 
     let checkedFavourites = localStorage.getItem(
-      "aux" + auxSelect.value + "fav",
+      "aux" + auxSelect.value + "fav"
     );
     if (checkedFavourites) {
       checkedFavourites = checkedFavourites.split(",");
@@ -104,7 +104,7 @@ function onMessage(e) {
 
   if (json.name != undefined) {
     for (let slider of document.querySelectorAll(
-      'input[data-channel="' + json.channel + '"]',
+      'input[data-channel="' + json.channel + '"]'
     )) {
       slider.previousElementSibling.innerHTML = json.name;
     }
@@ -137,12 +137,12 @@ function onMessage(e) {
   if (json.aux == auxSelect.options[auxSelect.selectedIndex].dataset.channel) {
     if (json.level != undefined) {
       for (let slider of document.querySelectorAll(
-        'input[data-channel="' + json.channel + '"].volumeInput',
+        'input[data-channel="' + json.channel + '"].volumeInput'
       )) {
         slider.value = json.level;
         slider.parentNode.style.setProperty(
           "--value",
-          slider.value * 100 + "%",
+          slider.value * 100 + "%"
         );
       }
       return;
@@ -150,12 +150,12 @@ function onMessage(e) {
 
     if (json.pan != undefined) {
       for (let slider of document.querySelectorAll(
-        'input[data-channel="' + json.channel + '"].panInput',
+        'input[data-channel="' + json.channel + '"].panInput'
       )) {
         slider.value = json.pan;
         slider.parentNode.style.setProperty(
           "--value",
-          slider.value * 100 + "%",
+          slider.value * 100 + "%"
         );
       }
       return;
@@ -212,7 +212,8 @@ function auxMouseDown(e) {
   e.stopImmediatePropagation();
   document.body.classList.add("auxPicker");
 }
-auxSelect.addEventListener("mousedown", auxMouseDown);
+auxSelect.addEventListener("mousedown", (e) => e.preventDefault());
+auxSelect.addEventListener("mouseup", auxMouseDown);
 
 /**
  * Select the Aux when a button is tapped
@@ -386,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     localStorage.setItem(
       "aux" + auxSelect.value + "favChecked",
-      favourites.checked,
+      favourites.checked
     );
 
     for (let fav of document.querySelectorAll('input[name="fav[]"]')) {
@@ -414,13 +415,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let checkedfavs = [];
     for (let checked of document.querySelectorAll(
-      'input[name="fav[]"]:checked',
+      'input[name="fav[]"]:checked'
     )) {
       checkedfavs.push(checked.value);
     }
     localStorage.setItem(
       "aux" + auxSelect.value + "fav",
-      checkedfavs.join(","),
+      checkedfavs.join(",")
     );
   });
 });
