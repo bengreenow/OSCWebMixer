@@ -1,9 +1,23 @@
 {
+  "auth": {
+    "enabled": false,
+    "users": [
+      {
+        "username": "admin",
+        "password": "admin",
+        "access": {
+          "auxes": [
+            1
+          ]
+        }
+      }
+    ]
+  },
   "desk": {
     "type": "SD",
     "ip": "192.168.2.8",
-    "receive_port": 8004,
-    "send_port": 8005
+    "receive_port": 8005,
+    "send_port": 8004
   },
   "server": {
     "port": 9000
@@ -11,58 +25,104 @@
   "aux": [
     {
       "label": "DRUMS",
-      "channel": 1,
-      "stereo": true,
+      "channel": 2,
+      "stereo": false,
       "colour": "6, 106, 166"
     },
     {
       "label": "BASS",
-      "channel": 2,
-      "stereo": true,
+      "channel": 3,
+      "stereo": false,
       "colour": "6, 166, 99"
     },
     {
-      "label": "GTR",
+      "label": "GTR 1",
       "channel": 4,
-      "stereo": true,
+      "stereo": false,
+      "colour": "48, 213, 6"
+    },
+    {
+      "label": "GTR 2",
+      "channel": 5,
+      "stereo": false,
       "colour": "48, 213, 6"
     },
     {
       "label": "KEYS",
-      "channel": 5,
-      "stereo": true,
+      "channel": 6,
+      "stereo": false,
       "colour": "166, 6, 6"
     },
     {
-      "label": "Lead 1",
-      "channel": 6,
+      "label": "Spare",
+      "channel": 7,
       "stereo": false,
       "colour": "113, 6, 166"
     },
     {
-      "label": "Lead 2",
-      "channel": 7,
+      "label": "VOX 1",
+      "channel": 8,
       "stereo": false,
       "colour": "194, 62, 132"
     },
     {
-      "label": "BV 1",
-      "channel": 8,
-      "stereo": false,
-      "colour": "6, 46, 140"
-    },
-    {
-      "label": "BV 2",
+      "label": "VOX 2",
       "channel": 9,
       "stereo": false,
-      "colour": "166, 89, 6"
+      "colour": "194, 62, 132"
     },
     {
-      "label": "BV 3",
+      "label": "VOX 3",
       "channel": 10,
       "stereo": false,
-      "colour": "242, 187, 0"
+      "colour": "194, 62, 132"
+    },
+    {
+      "label": "VOX 4",
+      "channel": 11,
+      "stereo": false,
+      "colour": "194, 62, 132"
     }
   ],
-  "channels": [1, 2, 3, 4, 5, 6, 7, 9, 10]
+  "channels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    37,
+    38,
+    39,
+    41,
+    44,
+    45,
+    46,
+    47,
+    48,
+    50
+  ]
 }

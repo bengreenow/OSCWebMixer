@@ -7,7 +7,8 @@ const init = (
   auxs,
   supportedChannels,
   serverPort,
-  mapping
+  mapping,
+  auth
 ) => {
   /**
    * The list of aux channels
@@ -271,11 +272,28 @@ const init = (
     let appResources = __dirname + "/web",
       app = express();
 
+    // console.log(auth);
+    // if (auth.enabled) {
+    //   useAuthRoutes(app, auth.users);
+    // }
+
     let server = http.createServer(app).listen(serverPort);
 
     app.use("/", express.static(appResources));
 
     return server;
+  }
+
+  /**
+   * Description
+   * @param {Express.Application} app
+   * @returns {any}
+   */
+  function useAuthRoutes(app) {
+    app.post("/auth", (req, res) => {
+      console.log(req.body);
+      return res.status(200).send("OK");
+    });
   }
 
   function startWebSocketServer(server) {
@@ -422,7 +440,6 @@ const init = (
     //save the level for a channel
     if (update.level != undefined) {
       if (!values[valueKey]) {
-        return;
         values[valueKey] = {};
       }
 
@@ -432,7 +449,6 @@ const init = (
     //save the pan for a channel
     if (update.pan != undefined) {
       if (!values[valueKey] || values[valueKey].pan === undefined) {
-        return;
         values[valueKey] = {};
       }
 

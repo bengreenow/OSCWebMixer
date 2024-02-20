@@ -43,7 +43,8 @@ import("./mapping/" + type.toUpperCase() + "-mapping.mjs").then(
       config.get("aux"), //The AUX channels for the session file you will be connecting to
       config.get("channels"), // A list of channels that are available to mix with.
       config.get("server.port"), // The port for the web server
-      new mappingModule.default(config)
+      new mappingModule.default(config),
+      config.get("auth")
     );
   }
 );

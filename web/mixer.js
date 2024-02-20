@@ -9,6 +9,8 @@ const channelsDiv = document.getElementById("channels"),
 let ws = null,
   timeout = null;
 
+fetch("/auth", { method: "POST" });
+
 /**
  * callback for when a channel volume or pan changes
  * @param ChangeEvent e - the channel volume/pan change event
