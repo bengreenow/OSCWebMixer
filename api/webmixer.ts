@@ -1,14 +1,53 @@
-"use strict";
+import path from "path";
+import Mapper from "../mapping/SD-mapping";
 
-const init = (
-  localPort,
-  remotePort,
-  remoteAddress,
-  auxs,
-  supportedChannels,
-  serverPort,
-  mapping,
-  auth
+import osc from "osc";
+import cliProgress from "cli-progress";
+import express, { Application } from "express";
+import http from "http";
+import WebSocket from "ws";
+import os from "os";
+import { Fetcher } from "./planningCenter";
+
+type AuxConfig = {
+  label: string;
+  channel: number;
+  stereo: boolean;
+  colour: string;
+};
+
+type GetAuthQuery = {
+  "aux?": number;
+};
+type SetAuxRequest = {
+  aux: number;
+  channel: number;
+  level: number;
+};
+type ClientMessage = GetAuthQuery | SetAuxRequest;
+
+// not used
+type AuthConfig = {
+  enabled: boolean;
+  users: {
+    username: string;
+    password: string;
+    access: {
+      auxes: number[];
+    };
+  }[];
+};
+
+export const init = async (
+  localPort: number,
+  remotePort: number,
+  remoteAddress: string,
+  auxs: AuxConfig[],
+  supportedChannels: number[],
+  serverPort: number,
+  mapping: Mapper,
+  auth: AuthConfig,
+  fetcher: Fetcher
 ) => {
   /**
    * The list of aux channels
@@ -17,11 +56,11 @@ const init = (
    */
   let auxList = JSON.parse(JSON.stringify(auxs));
 
-  const osc = require("osc"),
-    cliProgress = require("cli-progress"),
-    express = require("express"),
-    http = require("http"),
-    WebSocket = require("ws");
+  console.log(supportedChannels, mapping, auth);
+
+  let appResources = path.join(__dirname, "..", "web");
+
+  console.log(appResources);
 
   const SKIP = process.argv.indexOf("skip") !== -1;
   const DEBUG = process.argv.indexOf("debug") !== -1;
@@ -36,19 +75,21 @@ const init = (
    * All of the channels for the AUXs
    * @type [Int]
    */
-  let auxChannels = [];
+  let auxChannels: number[] = [];
 
   //add all aux channels to the channel numbers
   for (let aux of auxList) {
+    console.log(aux, "aux");
     auxChannels.push(aux.channel);
     aux.label = null; //reset all labels
     totalParamsToLoad++; //need to fetch the aux labels
   }
 
+  type OSCValue = { level: null | number; pan?: null | number };
   /**
    * All the OSC address:values that have been saved since the server started
    */
-  let values = {};
+  let values: Record<string, OSCValue> = {};
 
   // pre-populate values with default data
   for (
@@ -57,7 +98,7 @@ const init = (
     channelIndex++
   ) {
     for (let auxIndex = 0; auxIndex < auxList.length; auxIndex++) {
-      let data = {
+      let data: OSCValue = {
         level: null,
       };
       totalParamsToLoad++;
@@ -75,15 +116,17 @@ const init = (
 
   /**
    * Socket connections that have connected
-   * @type {Array}
    */
-  let connections = [];
+  let connections: WebSocket[] = [];
 
+  type Channel = {
+    label: null | string;
+    channel: number;
+  };
   /**
    * The channels that are available to mix.
-   * @type {Array}
    */
-  let channels = [];
+  let channels: Channel[] = [];
 
   //populate channels with blank values
   for (let chan of supportedChannels) {
@@ -98,12 +141,12 @@ const init = (
    * Get the IP addresses for this device on the network.
    */
   const getIPAddresses = () => {
-    let os = require("os"),
-      interfaces = os.networkInterfaces(),
+    const interfaces = os.networkInterfaces(),
       ipAddresses = [];
 
     for (let deviceName in interfaces) {
       let addresses = interfaces[deviceName];
+      if (!addresses) continue;
       for (let i = 0; i < addresses.length; i++) {
         let addressInfo = addresses[i];
         if (addressInfo.family === "IPv4" && !addressInfo.internal) {
@@ -132,7 +175,7 @@ const init = (
     remoteAddress: remoteAddress,
   });
 
-  udpPort.on("error", function (err) {
+  udpPort.on("error", function (err: any) {
     console.error("UDP error", err);
   });
 
@@ -172,10 +215,8 @@ const init = (
   /**
    * Handle OSC messages while loading
    * @param {Object} oscMsg - the OSC message received
-   * @param {??} timeTag - the time tag specified by the sender (may be undefined for non-bundle messages)
-   * @param {??} info - an implementation-specific remote information object
    */
-  function loadingMessages(oscMsg, timeTag, info) {
+  function loadingMessages(oscMsg: any) {
     if (DEBUG) {
       console.debug("Loading OSC message arrived: ", oscMsg);
     }
@@ -218,7 +259,8 @@ const init = (
    * @param {??} timeTag - the time tag specified by the sender (may be undefined for non-bundle messages)
    * @param {??} info - an implementation-specific remote information object
    */
-  function loadedMessages(oscMsg, timeTag, info) {
+  function loadedMessages(oscMsg: any, timeTag: any, info: any) {
+    console.log(oscMsg, timeTag, info, "loadedMessages");
     if (DEBUG) {
       console.debug("OSC message arrived: ", oscMsg);
     }
@@ -269,8 +311,7 @@ const init = (
 
   function startWebAppServer() {
     // Create an Express-based Web Socket server that clients can connect to
-    let appResources = __dirname + "/web",
-      app = express();
+    let app = express();
 
     // console.log(auth);
     // if (auth.enabled) {
@@ -284,19 +325,14 @@ const init = (
     return server;
   }
 
-  /**
-   * Description
-   * @param {Express.Application} app
-   * @returns {any}
-   */
-  function useAuthRoutes(app) {
+  function useAuthRoutes(app: Application) {
     app.post("/auth", (req, res) => {
       console.log(req.body);
       return res.status(200).send("OK");
     });
   }
 
-  function startWebSocketServer(server) {
+  function startWebSocketServer(server: http.Server) {
     const wss = new WebSocket.Server({
       server,
     });
@@ -317,8 +353,15 @@ const init = (
       });
       socket.send(info);
 
+      const isAuxQuery = (msg: ClientMessage): msg is GetAuthQuery => {
+        return (msg as GetAuthQuery)["aux?"] !== undefined;
+      };
+
       socket.on("message", function message(data) {
-        let msg = JSON.parse(data);
+        // yucky!
+        let msg: ClientMessage = JSON.parse(data.toString());
+
+        console.log("Message from client: ", msg);
 
         if (DEBUG) {
           console.debug("Message from client: ", msg);
@@ -327,8 +370,8 @@ const init = (
         /*
 				Respond to connection when a request was made for the current values for a AUX.
 				*/
-        if (msg["aux?"]) {
-          let channelValues = {};
+        if (isAuxQuery(msg)) {
+          let channelValues: Record<number, OSCValue> = {};
           for (let value in values) {
             for (let channel of channels) {
               if (value == "a" + msg["aux?"] + "|c" + channel.channel) {
@@ -383,8 +426,8 @@ const init = (
    * @param object msg - The OSC message to send
    * @param socket ignore - A socket connection to not send the message to.
    */
-  function sendToConnections(msg, ignore = null) {
-    let validConnections = [];
+  function sendToConnections(msg: any, ignore: null | WebSocket = null) {
+    const validConnections: WebSocket[] = [];
     connections.forEach(function (connection) {
       /**
        * CONNECTING = 0
@@ -400,13 +443,19 @@ const init = (
     connections = validConnections;
   }
 
+  type SaveConfigRequest =
+    | SetAuxRequest
+    | { auxname: string; channel: number }
+    | { name: string; channel: number };
+
   /**
    * Update current config with supplied message
    * @param object update - the update to apply
    */
-  function saveConfig(update) {
+  function saveConfig(update: SaveConfigRequest) {
+    console.log(update, "update");
     //update aux channel name
-    if (update.auxname != undefined) {
+    if ("auxname" in update && update.auxname) {
       //only save aux info we care about
       if (auxChannels.indexOf(update.channel) == -1) {
         return;
@@ -426,7 +475,7 @@ const init = (
     }
 
     //update channel name
-    if (update.name != undefined) {
+    if ("name" in update && update.name) {
       for (let channel of channels) {
         if (channel.channel == update.channel) {
           channel.label = update.name;

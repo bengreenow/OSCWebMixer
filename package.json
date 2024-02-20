@@ -11,7 +11,8 @@
   },
   "scripts": {
     "start": "node .",
-    "dev": "node . skip"
+    "dev": "ts-node-dev --respawn --transpile-only . skip",
+    "debug": "node . debug"
   },
   "license": "MIT",
   "keywords": [
@@ -25,7 +26,17 @@
     "cli-progress": "^3.11.2",
     "config": "^3.3.9",
     "express": "4.18.2",
+    "jsona": "^1.12.1",
     "osc": "2.4.3",
     "ws": "8.12.0"
+  },
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "@types/config": "^3.3.3",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.19",
+    "@types/ws": "^8.5.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   }
 }

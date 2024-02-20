@@ -1,12 +1,13 @@
-"use strict";
+import { IConfig } from "config";
+
 export default class Mapper {
-  constructor(config) {}
+  constructor(config: IConfig) {}
 
   /**
    * Convert webmixer message to OSC message.
    * @param {Object} msg - the object to convert to an OSC message.
    */
-  getOSC(msg) {
+  getOSC(msg: any) {
     if (msg.level != undefined) {
       return {
         address:
@@ -42,7 +43,7 @@ export default class Mapper {
     //channel level
     let match =
       /\/sd\/Input_Channels\/([0-9]+)\/Aux_Send\/([0-9]+)\/send_level/.exec(
-        osc.address,
+        osc.address
       );
     if (match) {
       return {
@@ -54,7 +55,7 @@ export default class Mapper {
 
     //channel panning
     match = /\/sd\/Input_Channels\/([0-9]+)\/Aux_Send\/([0-9]+)\/send_pan/.exec(
-      osc.address,
+      osc.address
     );
     if (match) {
       return {
@@ -66,7 +67,7 @@ export default class Mapper {
 
     //channel name
     match = /\/sd\/Input_Channels\/([0-9]+)\/Channel_Input\/name/.exec(
-      osc.address,
+      osc.address
     );
     if (match) {
       return {
@@ -99,7 +100,7 @@ export default class Mapper {
     auxs.forEach(function (aux) {
       //request aux names from desk
       addressesToRequest.push(
-        "/sd/Aux_Outputs/" + aux.channel + "/Buss_Trim/name/?",
+        "/sd/Aux_Outputs/" + aux.channel + "/Buss_Trim/name/?"
       );
 
       for (let i = 0; i < channels.length; i++) {
@@ -110,7 +111,7 @@ export default class Mapper {
               channels[i] +
               "/Aux_Send/" +
               aux.channel +
-              "/send_pan/?",
+              "/send_pan/?"
           );
         }
 
@@ -120,7 +121,7 @@ export default class Mapper {
             channels[i] +
             "/Aux_Send/" +
             aux.channel +
-            "/send_level/?",
+            "/send_level/?"
         );
       }
     });
@@ -128,7 +129,7 @@ export default class Mapper {
     //request channel names from desk
     for (let i = 0; i < channels.length; i++) {
       addressesToRequest.push(
-        "/sd/Input_Channels/" + channels[i] + "/Channel_Input/name/?",
+        "/sd/Input_Channels/" + channels[i] + "/Channel_Input/name/?"
       );
     }
 
