@@ -431,7 +431,9 @@ label.pan {
 }
 
 #auxiliaries button {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: #fff;
   width: 100%;
   cursor: pointer;

@@ -2,7 +2,7 @@
   "planningCenter": {
     "baseUrl": "https://api.planningcenteronline.com/services/v2",
     "appId": "e8d12040093dd5ec595ecfa949bc2d6cfc029185b94745ed820ac009d147e770",
-    "secret": "FILL ME IN "
+    "worshipTeamId": "5715257"
   },
   "auth": {
     "enabled": false,
@@ -29,64 +29,94 @@
   },
   "aux": [
     {
-      "label": "DRUMS",
+      "label": "LV",
+      "planningCenterNames": [
+        "LV"
+      ],
+      "channel": 8,
+      "stereo": false,
+      "colour": "194, 62, 132"
+    },
+    {
+      "label": "LV 2",
+      "planningCenterNames": [
+        "LV 2"
+      ],
+      "channel": 9,
+      "stereo": false,
+      "colour": "194, 62, 132"
+    },
+    {
+      "label": "LV 3",
+      "planningCenterNames": [
+        "LV 3"
+      ],
+      "channel": 10,
+      "stereo": false,
+      "colour": "194, 62, 132"
+    },
+    {
+      "label": "LV 4",
+      "planningCenterNames": [
+        "LV 4"
+      ],
+      "channel": 11,
+      "stereo": false,
+      "colour": "194, 62, 132"
+    },
+    {
+      "label": "Drums",
+      "planningCenterNames": [
+        "Drums"
+      ],
       "channel": 2,
       "stereo": false,
       "colour": "6, 106, 166"
     },
     {
-      "label": "BASS",
+      "label": "Bass",
+      "planningCenterNames": [
+        "Bass"
+      ],
       "channel": 3,
       "stereo": false,
       "colour": "6, 166, 99"
     },
     {
-      "label": "GTR 1",
+      "label": "EG 1",
+      "planningCenterNames": [
+        "EG 1"
+      ],
       "channel": 4,
       "stereo": false,
       "colour": "48, 213, 6"
     },
     {
       "label": "GTR 2",
+      "planningCenterNames": [
+        "GTR 2"
+      ],
       "channel": 5,
       "stereo": false,
       "colour": "48, 213, 6"
     },
     {
       "label": "KEYS",
+      "planningCenterNames": [
+        "KEYS"
+      ],
       "channel": 6,
       "stereo": false,
       "colour": "166, 6, 6"
     },
     {
       "label": "Spare",
+      "planningCenterNames": [
+        "Spare"
+      ],
       "channel": 7,
       "stereo": false,
       "colour": "113, 6, 166"
-    },
-    {
-      "label": "VOX 1",
-      "channel": 8,
-      "stereo": false,
-      "colour": "194, 62, 132"
-    },
-    {
-      "label": "VOX 2",
-      "channel": 9,
-      "stereo": false,
-      "colour": "194, 62, 132"
-    },
-    {
-      "label": "VOX 3",
-      "channel": 10,
-      "stereo": false,
-      "colour": "194, 62, 132"
-    },
-    {
-      "label": "VOX 4",
-      "channel": 11,
-      "stereo": false,
-      "colour": "194, 62, 132"
     }
   ],
   "channels": [

@@ -8,12 +8,15 @@ import http from "http";
 import WebSocket from "ws";
 import os from "os";
 import { Fetcher } from "./planningCenter";
+import prompts from "prompts";
+import Jsona from "jsona";
 
 type AuxConfig = {
-  label: string;
+  label: string | null;
   channel: number;
   stereo: boolean;
   colour: string;
+  planningCenterNames: string[];
 };
 
 type GetAuthQuery = {
@@ -49,21 +52,48 @@ export const init = async (
   auth: AuthConfig,
   fetcher: Fetcher
 ) => {
-  /**
-   * The list of aux channels
-   * Uses JSON.stringify and JSON.parse to clone auxs
-   * @type {Object}
-   */
-  let auxList = JSON.parse(JSON.stringify(auxs));
-
-  console.log(supportedChannels, mapping, auth);
-
   let appResources = path.join(__dirname, "..", "web");
-
-  console.log(appResources);
 
   const SKIP = process.argv.indexOf("skip") !== -1;
   const DEBUG = process.argv.indexOf("debug") !== -1;
+
+  const plans = await fetcher.getAllPlans();
+
+  console.log(plans.length);
+  const chosenPlan = await prompts([
+    {
+      type: "select",
+      name: "plan",
+      message: "Choose a plan",
+      choices: plans.map((x) => {
+        const date = new Date(x.sort_date);
+        return {
+          title:
+            `${x.service_type?.name.trim()} - ${date.toDateString()} ${date.toLocaleTimeString()}` ||
+            "No Name",
+          // description: JSON.stringify(new Jsona().serialize({ stuff: x }).data),
+          value: { serviceType: x.service_type.id, plan: x.id },
+        };
+      }),
+    },
+  ]);
+
+  console.log();
+  const teamMembers = await fetcher.getTeamMembers(
+    chosenPlan.plan.serviceType,
+    chosenPlan.plan.plan
+  );
+  const teamMemberFiltered = (teamMembers as any[]).map((x: any) => ({
+    name: x.name as string,
+    id: x.id as string,
+    role: x.team_position_name as string,
+    img: x.photo_thumbnail as string,
+  }));
+
+  const auxList = auxs.map((x) => {
+    const user = teamMemberFiltered.find((y) => y.role === x.label);
+    return { ...x, user: user || null };
+  });
 
   /**
    * The total number of parameters that need to load.
@@ -92,11 +122,7 @@ export const init = async (
   let values: Record<string, OSCValue> = {};
 
   // pre-populate values with default data
-  for (
-    let channelIndex = 0;
-    channelIndex < supportedChannels.length;
-    channelIndex++
-  ) {
+  for (const element of supportedChannels) {
     for (let auxIndex = 0; auxIndex < auxList.length; auxIndex++) {
       let data: OSCValue = {
         level: null,
@@ -108,9 +134,7 @@ export const init = async (
         totalParamsToLoad++;
       }
 
-      values[
-        "a" + auxList[auxIndex].channel + "|c" + supportedChannels[channelIndex]
-      ] = data;
+      values["a" + auxList[auxIndex].channel + "|c" + element] = data;
     }
   }
 

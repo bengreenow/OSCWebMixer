@@ -4,7 +4,6 @@ import { init } from "./api/webmixer";
 import Mapper from "./mapping/SD-mapping";
 import { Fetcher } from "./api/planningCenter";
 
-console.log(config);
 // const config = require("config"),
 //   webmixer = require("./api/webmixer");
 
@@ -41,7 +40,6 @@ if (config.has("desk.type")) {
 console.log("Loading DiGiCo " + type + " configuration");
 
 const planningCenter = new Fetcher(config.get("planningCenter"));
-console.log(config.get("planningCenter"));
 
 init(
   config.get("desk.send_port"),

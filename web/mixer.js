@@ -175,22 +175,30 @@ function buildAux(options) {
   auxiliaries.innerHTML = "";
 
   for (let option of options) {
-    selectHTML +=
-      '<option value="' +
-      option.channel +
-      '" data-channel="' +
-      option.channel +
-      '" data-colour="' +
-      option.colour +
-      '" data-stereo="' +
-      option.stereo +
-      '">' +
-      option.label +
-      "</option>";
+    selectHTML += `<option value="${option.channel}"
+        data-channel="${option.channel}"
+        data-colour="${option.colour}" 
+        data-stereo="${option.stereo}"
+      >
+      ${option.label}
+      </option>`;
 
     let button = document.createElement("button");
     button.value = option.channel;
-    button.innerHTML = option.label;
+    // button.innerHTML = option.label;
+    const imgSrc = option?.user?.img;
+    if (imgSrc) {
+      const img = document.createElement("img");
+      img.style.maxWidth = "40px";
+      img.style.margin = "-10px 0";
+      img.src = imgSrc;
+      button.appendChild(img);
+    }
+
+    const txt = document.createElement("span");
+    txt.innerHTML = `${option.label}`;
+    button.appendChild(txt);
+
     button.style.setProperty("--tint", option.colour);
     auxiliaries.appendChild(button);
   }
