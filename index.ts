@@ -3,6 +3,7 @@ import config from "config";
 import { init } from "./api/webmixer";
 import Mapper from "./mapping/SD-mapping";
 import { Fetcher } from "./api/planningCenter";
+import secret from "./config/secrets.json";
 
 // const config = require("config"),
 //   webmixer = require("./api/webmixer");
@@ -38,8 +39,14 @@ if (config.has("desk.type")) {
 }
 
 console.log("Loading DiGiCo " + type + " configuration");
-
-const planningCenter = new Fetcher(config.get("planningCenter"));
+const planningCenterConfig = {
+  ...(config.get("planningCenter") as {
+    baseUrl: string;
+    worshipTeamId: string;
+  }),
+  ...secret.planningCenter,
+};
+const planningCenter = new Fetcher(planningCenterConfig);
 
 init(
   config.get("desk.send_port"),

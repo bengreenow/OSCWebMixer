@@ -1,7 +1,6 @@
 {
   "planningCenter": {
     "baseUrl": "https://api.planningcenteronline.com/services/v2",
-    "appId": "e8d12040093dd5ec595ecfa949bc2d6cfc029185b94745ed820ac009d147e770",
     "worshipTeamId": "5715257"
   },
   "auth": {
