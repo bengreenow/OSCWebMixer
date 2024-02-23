@@ -187,21 +187,42 @@ function buildAux(options) {
     button.value = option.channel;
     // button.innerHTML = option.label;
     const imgSrc = option?.user?.img;
+
+    const name = option?.user?.name;
+
+    const leftSide = document.createElement('div')
+    
+    leftSide.style = 'display: flex; align-items: center; gap: 16px'
+
     if (imgSrc) {
       const img = document.createElement("img");
       img.style.maxWidth = "40px";
       img.style.margin = "-10px 0";
+      img.style.boxShadow = " 0 0  7px rgba(0,0,0,0.6)"
       img.src = imgSrc;
-      button.appendChild(img);
+      
+      leftSide.appendChild(img);
+    }
+    
+    if (name) {
+      const nameEl = document.createElement('span')
+      nameEl.innerText = name;
+
+      leftSide.appendChild(nameEl)
     }
 
+    button.appendChild(leftSide)
+
     const txt = document.createElement("span");
+    txt.style = 'color: #fff; font-weight: 100; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 4px 6px;'
     txt.innerHTML = `${option.label}`;
+
     button.appendChild(txt);
 
     button.style.setProperty("--tint", option.colour);
     auxiliaries.appendChild(button);
   }
+
   auxSelect.innerHTML = selectHTML;
 
   if (localStorage.getItem("aux")) {

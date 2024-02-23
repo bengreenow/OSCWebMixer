@@ -16,7 +16,7 @@ type AuxConfig = {
   channel: number;
   stereo: boolean;
   colour: string;
-  planningCenterNames: string[];
+  extraPlanningCenterNames?: string[];
 };
 
 type GetAuthQuery = {
@@ -91,7 +91,11 @@ export const init = async (
   }));
 
   const auxList = auxs.map((x) => {
-    const user = teamMemberFiltered.find((y) => y.role === x.label);
+    const user = teamMemberFiltered.find(
+      (y) =>
+        y.role === x.label ||
+        x.extraPlanningCenterNames?.some((n) => n === y.role)
+    );
     return { ...x, user: user || null };
   });
 
@@ -109,7 +113,6 @@ export const init = async (
 
   //add all aux channels to the channel numbers
   for (let aux of auxList) {
-    console.log(aux, "aux");
     auxChannels.push(aux.channel);
     aux.label = null; //reset all labels
     totalParamsToLoad++; //need to fetch the aux labels
@@ -182,7 +185,9 @@ export const init = async (
   };
 
   let ipAddresses = getIPAddresses();
+  const glowAudioIp = ipAddresses.find((x) => x.startsWith("192.168"));
 
+  if (!glowAudioIp) throw new Error("NO IP FOUND FOR GLOW AUDIO");
   /*
 	Progress bar to load desk values
 	*/
@@ -193,11 +198,13 @@ export const init = async (
 
   // Bind to a UDP socket to listen for incoming OSC events.
   let udpPort = new osc.UDPPort({
-    localAddress: ipAddresses[0],
+    localAddress: glowAudioIp,
     localPort: localPort,
     remotePort: remotePort,
     remoteAddress: remoteAddress,
   });
+
+
 
   udpPort.on("error", function (err: any) {
     console.error("UDP error", err);
@@ -230,9 +237,11 @@ export const init = async (
 		If you do this the desk can ignore some requests and then we will never load correctly.
 		*/
     if (loadingAddresses.length > 0) {
-      udpPort.send({
+      const msg  = udpPort.send({
         address: loadingAddresses.shift(),
       });
+
+      console.log(msg)
     }
   });
 
@@ -477,7 +486,6 @@ export const init = async (
    * @param object update - the update to apply
    */
   function saveConfig(update: SaveConfigRequest) {
-    console.log(update, "update");
     //update aux channel name
     if ("auxname" in update && update.auxname) {
       //only save aux info we care about

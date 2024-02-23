@@ -10,7 +10,7 @@
     "url": "git://github.com/"
   },
   "scripts": {
-    "start": "node .",
+    "start": "ts-node-dev --respawn --transpile-only .",
     "dev": "ts-node-dev --respawn --transpile-only . skip",
     "debug": "node . debug"
   },

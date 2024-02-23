@@ -21,102 +21,75 @@
   "desk": {
     "type": "SD",
     "ip": "192.168.2.8",
-    "receive_port": 8005,
-    "send_port": 8004
-  },
+    "receive_port": 8007,
+    "send_port": 8006
+    },
   "server": {
     "port": 9000
   },
   "aux": [
     {
       "label": "LV",
-      "planningCenterNames": [
-        "LV"
-      ],
       "channel": 8,
       "stereo": false,
-      "colour": "194, 62, 132"
+      "colour": "239, 68, 68"
     },
     {
       "label": "LV 2",
-      "planningCenterNames": [
-        "LV 2"
-      ],
       "channel": 9,
       "stereo": false,
-      "colour": "194, 62, 132"
+      "colour": "249, 115, 22"
+    },
+    {
+      "label": "Worship Leader",
+      "channel": 10,
+      "stereo": false,
+      "colour": "132, 204, 22"
     },
     {
       "label": "LV 3",
-      "planningCenterNames": [
-        "LV 3"
-      ],
-      "channel": 10,
+      "channel": 11,
       "stereo": false,
-      "colour": "194, 62, 132"
+      "colour": "168, 85, 247"
     },
     {
       "label": "LV 4",
-      "planningCenterNames": [
-        "LV 4"
-      ],
-      "channel": 11,
+      "channel": 7,
       "stereo": false,
-      "colour": "194, 62, 132"
+      "colour": "59, 130, 246"
     },
     {
       "label": "Drums",
-      "planningCenterNames": [
-        "Drums"
-      ],
       "channel": 2,
       "stereo": false,
-      "colour": "6, 106, 166"
+      "colour": "100, 116, 139"
     },
     {
       "label": "Bass",
-      "planningCenterNames": [
-        "Bass"
-      ],
       "channel": 3,
       "stereo": false,
-      "colour": "6, 166, 99"
+      "colour": "100, 116, 139"
     },
     {
       "label": "EG 1",
-      "planningCenterNames": [
-        "EG 1"
-      ],
       "channel": 4,
       "stereo": false,
-      "colour": "48, 213, 6"
+      "colour": "100, 116, 139"
     },
     {
-      "label": "GTR 2",
-      "planningCenterNames": [
-        "GTR 2"
+      "label": "EG 2",
+      "extraPlanningCenterNames": [
+        "AG 1"
       ],
       "channel": 5,
       "stereo": false,
-      "colour": "48, 213, 6"
+      "colour": "100, 116, 139"
     },
     {
-      "label": "KEYS",
-      "planningCenterNames": [
-        "KEYS"
-      ],
+      "label": "Keys",
       "channel": 6,
       "stereo": false,
-      "colour": "166, 6, 6"
-    },
-    {
-      "label": "Spare",
-      "planningCenterNames": [
-        "Spare"
-      ],
-      "channel": 7,
-      "stereo": false,
-      "colour": "113, 6, 166"
+      "colour": "100, 116, 139"
     }
   ],
   "channels": [
