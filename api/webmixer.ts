@@ -88,12 +88,18 @@ export const init = async (
     img: x.photo_thumbnail as string,
   }));
 
+  const found = new Set<string>();
   const auxList = auxs.map((x) => {
-    const user = teamMemberFiltered.find(
-      (y) =>
-        y.role === x.label ||
-        x.extraPlanningCenterNames?.some((n) => n === y.role)
-    );
+    const user = teamMemberFiltered.find((y) => {
+      return (
+        !found.has(y.id) &&
+        (y.role === x.label ||
+          x.extraPlanningCenterNames?.some((n) => n === y.role))
+      );
+    });
+
+    if (user) found.add(user.id);
+
     return { ...x, user: user || null };
   });
 
@@ -202,8 +208,6 @@ export const init = async (
     remoteAddress: remoteAddress,
   });
 
-
-
   udpPort.on("error", function (err: any) {
     console.error("UDP error", err);
   });
@@ -235,10 +239,9 @@ export const init = async (
 		If you do this the desk can ignore some requests and then we will never load correctly.
 		*/
     if (loadingAddresses.length > 0) {
-      const msg  = udpPort.send({
+      const msg = udpPort.send({
         address: loadingAddresses.shift(),
       });
-
     }
   });
 
@@ -347,7 +350,9 @@ export const init = async (
     //   useAuthRoutes(app, auth.users);
     // }
 
-    let server = http.createServer(app).listen({port: serverPort, host: glowAudioIp});
+    let server = http
+      .createServer(app)
+      .listen({ port: serverPort, host: glowAudioIp });
 
     app.use("/", express.static(appResources));
 
@@ -389,7 +394,6 @@ export const init = async (
       socket.on("message", function message(data) {
         // yucky!
         let msg: ClientMessage = JSON.parse(data.toString());
-
 
         if (DEBUG) {
           console.debug("Message from client: ", msg);
