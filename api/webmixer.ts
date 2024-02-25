@@ -59,7 +59,6 @@ export const init = async (
 
   const plans = await fetcher.getAllPlans();
 
-  console.log(plans.length);
   const chosenPlan = await prompts([
     {
       type: "select",
@@ -78,7 +77,6 @@ export const init = async (
     },
   ]);
 
-  console.log();
   const teamMembers = await fetcher.getTeamMembers(
     chosenPlan.plan.serviceType,
     chosenPlan.plan.plan
@@ -241,7 +239,6 @@ export const init = async (
         address: loadingAddresses.shift(),
       });
 
-      console.log(msg)
     }
   });
 
@@ -293,7 +290,6 @@ export const init = async (
    * @param {??} info - an implementation-specific remote information object
    */
   function loadedMessages(oscMsg: any, timeTag: any, info: any) {
-    console.log(oscMsg, timeTag, info, "loadedMessages");
     if (DEBUG) {
       console.debug("OSC message arrived: ", oscMsg);
     }
@@ -351,7 +347,7 @@ export const init = async (
     //   useAuthRoutes(app, auth.users);
     // }
 
-    let server = http.createServer(app).listen(serverPort);
+    let server = http.createServer(app).listen({port: serverPort, host: glowAudioIp});
 
     app.use("/", express.static(appResources));
 
@@ -394,7 +390,6 @@ export const init = async (
         // yucky!
         let msg: ClientMessage = JSON.parse(data.toString());
 
-        console.log("Message from client: ", msg);
 
         if (DEBUG) {
           console.debug("Message from client: ", msg);
@@ -446,7 +441,7 @@ export const init = async (
 
     console.log(
       "\n\nServer Ready.\nVisit http://" +
-        ipAddresses[0] +
+        glowAudioIp +
         ":" +
         serverPort +
         " in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network."

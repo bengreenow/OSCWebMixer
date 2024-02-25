@@ -2,6 +2,7 @@
   "planningCenter": {
     "baseUrl": "https://api.planningcenteronline.com/services/v2",
     "worshipTeamId": "5715257"
+
   },
   "auth": {
     "enabled": false,
@@ -24,7 +25,7 @@
     "send_port": 8006
     },
   "server": {
-    "port": 9000
+    "port": 80
   },
   "aux": [
     {
