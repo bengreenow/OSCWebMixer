@@ -24,7 +24,7 @@
     "send_port": 8006
   },
   "server": {
-    "port": 42069
+    "port": 80
   },
   "aux": [
     {
