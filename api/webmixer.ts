@@ -1,6 +1,7 @@
 import path from "path";
 import Mapper from "../mapping/SD-mapping";
 
+import QRCode from "qrcode-terminal";
 import osc from "osc";
 import cliProgress from "cli-progress";
 import express, { Application } from "express";
@@ -10,6 +11,7 @@ import os from "os";
 import { Fetcher } from "./planningCenter";
 import prompts from "prompts";
 import Jsona from "jsona";
+import { faker } from "@faker-js/faker";
 
 type AuxConfig = {
   label: string | null;
@@ -56,6 +58,8 @@ export const init = async (
 
   const SKIP = process.argv.indexOf("skip") !== -1;
   const DEBUG = process.argv.indexOf("debug") !== -1;
+
+  const SessionId = createSessionId();
 
   const plans = await fetcher.getAllPlans();
 
@@ -189,9 +193,17 @@ export const init = async (
   };
 
   let ipAddresses = getIPAddresses();
-  const glowAudioIp = ipAddresses.find((x) => x.startsWith("192.168"));
+  let glowAudioIp = ipAddresses.find((x) => x.startsWith("192.168"));
+  if (SKIP) glowAudioIp = ipAddresses[0];
 
   if (!glowAudioIp) throw new Error("NO IP FOUND FOR GLOW AUDIO");
+
+  const result = await fetcher.setPlanNote(
+    `EARS MIXER URL: \n\n ${getWebAppUrl()}`,
+    chosenPlan.plan.plan,
+    chosenPlan.plan.serviceType
+  );
+
   /*
 	Progress bar to load desk values
 	*/
@@ -354,7 +366,7 @@ export const init = async (
       .createServer(app)
       .listen({ port: serverPort, host: glowAudioIp });
 
-    app.use("/", express.static(appResources));
+    app.use(`/${SessionId}`, express.static(appResources));
 
     return server;
   }
@@ -438,18 +450,59 @@ export const init = async (
     });
   }
 
+  function hashString(str: string, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed,
+      h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+  }
+
+  function getWebAppUrl() {
+    return "http://" + glowAudioIp + ":" + serverPort + "/" + SessionId;
+  }
+
+  function createSessionId(): string {
+    const now = new Date();
+    const str = now.toDateString() + "123";
+    const hash = hashString(str);
+
+    faker.seed(hash);
+
+    return [
+      faker.color.human(),
+      faker.word.noun({
+        length: {
+          max: 5,
+          min: 4,
+        },
+      }),
+    ]
+      .join("-")
+      .toLowerCase()
+      .replace(/\s/g, "");
+  }
+
   function startServer() {
+    new Array(20).fill(null).forEach(() => console.log(createSessionId()));
+    const webappUrl = getWebAppUrl();
     let server = startWebAppServer();
 
     startWebSocketServer(server);
 
     console.log(
-      "\n\nServer Ready.\nVisit http://" +
-        glowAudioIp +
-        ":" +
-        serverPort +
-        " in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network."
+      `\n\nServer Ready.\nVisit ${webappUrl} in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network.`
     );
+
+    QRCode.generate(webappUrl, { small: true });
   }
 
   /**

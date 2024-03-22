@@ -22,7 +22,7 @@ export class Fetcher {
 
   private async fetch(path: string, options: RequestInit) {
     const finalPath = `${this.baseUrl}${path}`;
-    console.log(`Fetching ${finalPath}`);
+    // console.log(`Fetching ${finalPath}`);
 
     const response = await fetch(finalPath, {
       ...options,
@@ -38,7 +38,41 @@ export class Fetcher {
   async getServices() {
     const json = await this.fetch("/service_types", { method: "GET" });
 
+    this.dataFormatter.serialize;
+
     return this.dataFormatter.deserialize(json) as ServiceType[];
+  }
+
+  private GENERAL_CATEGORY_ID = "4764879";
+  async setPlanNote(
+    noteContent: string,
+    planId: string,
+    serviceTypeId: string
+  ) {
+    const json = {
+      data: {
+        type: "PlanNote",
+        attributes: {
+          content: noteContent,
+        },
+        relationships: {
+          plan_note_category: {
+            data: {
+              type: "PlanNoteCategory",
+              id: this.GENERAL_CATEGORY_ID,
+            },
+          },
+        },
+      },
+    };
+
+    return await this.fetch(
+      `/service_types/${serviceTypeId}/plans/${planId}/notes`,
+      {
+        method: "POST",
+        body: JSON.stringify(json),
+      }
+    );
   }
 
   async getAllPlans() {
