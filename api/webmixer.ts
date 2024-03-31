@@ -60,9 +60,21 @@ export const init = async (
   const SKIP = process.argv.indexOf("skip") !== -1;
   const DEBUG = process.argv.indexOf("debug") !== -1;
 
-  const SessionId = createSessionId();
+  let offlineMode = false;
 
-  const plans = await fetcher.getAllPlans();
+  const SessionId = createSessionId();
+  let plans = [];
+  try {
+    plans = await fetcher.getAllPlans();
+  } catch {
+    const ans = await prompts({
+      type: "confirm",
+      name: "offline",
+      message: "Planning center fetch failed. Continue in offline mode?",
+    });
+
+    offlineMode = Boolean(ans.offline);
+  }
 
   const chosenPlan = await prompts([
     {
@@ -82,10 +94,14 @@ export const init = async (
     },
   ]);
 
-  const teamMembers = await fetcher.getTeamMembers(
-    chosenPlan.plan.serviceType,
-    chosenPlan.plan.plan
-  );
+  let teamMembers = [];
+
+  if (!offlineMode) {
+    teamMembers = (await fetcher.getTeamMembers(
+      chosenPlan.plan.serviceType,
+      chosenPlan.plan.plan
+    )) as any[];
+  }
   const teamMemberFiltered = (teamMembers as any[]).map((x: any) => ({
     name: x.name as string,
     id: x.id as string,
@@ -199,11 +215,13 @@ export const init = async (
 
   if (!glowAudioIp) throw new Error("NO IP FOUND FOR GLOW AUDIO");
 
-  const result = await fetcher.setPlanNote(
-    `EARS MIXER URL: \n\n ${getWebAppUrl()}`,
-    chosenPlan.plan.plan,
-    chosenPlan.plan.serviceType
-  );
+  if (!offlineMode) {
+    const result = await fetcher.setPlanNote(
+      `EARS MIXER URL: \n\n ${getWebAppUrl()}`,
+      chosenPlan.plan.plan,
+      chosenPlan.plan.serviceType
+    );
+  }
 
   /*
 	Progress bar to load desk values
@@ -493,7 +511,6 @@ export const init = async (
   }
 
   function startServer() {
-    new Array(20).fill(null).forEach(() => console.log(createSessionId()));
     const webappUrl = getWebAppUrl();
     let server = startWebAppServer();
 
