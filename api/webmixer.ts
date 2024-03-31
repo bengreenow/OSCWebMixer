@@ -381,6 +381,11 @@ export const init = async (
     //   useAuthRoutes(app, auth.users);
     // }
 
+    app.get("/qr", async () => {
+      const data = await QRCode.toDataURL(getWebAppUrl());
+      return `<img src="${data}" />`;
+    });
+
     let server = http
       .createServer(app)
       .listen({ port: serverPort, host: glowAudioIp });
@@ -519,14 +524,6 @@ export const init = async (
     console.log(
       `\n\nServer Ready.\nVisit ${webappUrl} in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network.`
     );
-    const qrCodeImageData = QRCode.toDataURL(webappUrl);
-
-    let app = express();
-    app.get("/qr", () => {
-      return `<img src="${qrCodeImageData}" />`;
-    });
-
-    let qrServer = http.createServer(app).listen({ port: 81 });
 
     QRCodeTerminal.generate(webappUrl, { small: true });
   }
