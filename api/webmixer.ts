@@ -519,14 +519,14 @@ export const init = async (
     console.log(
       `\n\nServer Ready.\nVisit ${webappUrl} in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network.`
     );
-    // const qrCodeImageData = QRCode.toDataURL(webappUrl);
+    const qrCodeImageData = QRCode.toDataURL(webappUrl);
 
-    // let app = express();
-    // app.get("/qr", () => {
-    //   return `<img src="${qrCodeImageData}" />`;
-    // });
+    let app = express();
+    app.get("/qr", () => {
+      return `<img src="${qrCodeImageData}" />`;
+    });
 
-    // let qrServer = http.createServer(app).listen({ port: serverPort });
+    let qrServer = http.createServer(app).listen({ port: 81 });
 
     QRCodeTerminal.generate(webappUrl, { small: true });
   }
