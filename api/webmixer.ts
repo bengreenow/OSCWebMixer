@@ -1,7 +1,8 @@
 import path from "path";
 import Mapper from "../mapping/SD-mapping";
 
-import QRCode from "qrcode-terminal";
+import QRCodeTerminal from "qrcode-terminal";
+import QRCode from "qrcode";
 import osc from "osc";
 import cliProgress from "cli-progress";
 import express, { Application } from "express";
@@ -501,8 +502,16 @@ export const init = async (
     console.log(
       `\n\nServer Ready.\nVisit ${webappUrl} in a web browser to access OSC Web Mixer.\nPlease make sure the device you want to use is on the same network.`
     );
+    // const qrCodeImageData = QRCode.toDataURL(webappUrl);
 
-    QRCode.generate(webappUrl, { small: true });
+    // let app = express();
+    // app.get("/qr", () => {
+    //   return `<img src="${qrCodeImageData}" />`;
+    // });
+
+    // let qrServer = http.createServer(app).listen({ port: serverPort });
+
+    QRCodeTerminal.generate(webappUrl, { small: true });
   }
 
   /**
