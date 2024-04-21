@@ -214,6 +214,10 @@ export const init = async (
   if (SKIP) glowAudioIp = ipAddresses[0];
 
   if (!glowAudioIp) throw new Error("NO IP FOUND FOR GLOW AUDIO");
+  if (!glowAudioIp.endsWith("7"))
+    console.info(
+      "GLOW AUDIO IP DOES NOT END WITH 7 - DOES IT MATCH THE CONSOLE"
+    );
 
   if (!offlineMode) {
     const result = await fetcher.setPlanNote(
