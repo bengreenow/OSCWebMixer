@@ -179,7 +179,7 @@ input[type="range"] {
   width: calc(100% + 10px);
   height: 44px;
 
-  background: rgba(var(--tint, "6, 106, 166"), 0.4);
+ 
   min-height: 44px;
   border-radius: 8px;
   margin: 2px -5px 0;

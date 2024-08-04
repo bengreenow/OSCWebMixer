@@ -56,7 +56,7 @@ function requestValues() {
 function onMessage(e) {
   let json = JSON.parse(e.data);
 
-  //console.log(json);
+  console.log(json);
 
   //Setup AUX and channels
   if (json.config) {
@@ -290,13 +290,15 @@ function resetSlider(e) {
 function buildChannels(channels) {
   let html = "";
   for (let channel of channels) {
+
+    console.log(channel )
     html += "<div>";
     html +=
       '<label class="volume"><span>' +
       channel.label +
       '</span><input type="range" data-channel="' +
       channel.channel +
-      '" class="volumeInput" step="0.01" min="0" max="1" value="0" /></label>';
+      `" class="volumeInput" style=" background: rgba(var(--tint, '6, 106, 166'), 0.4);${"" }" step="0.01" min="0" max="1" value="0" /></label>`;
     html +=
       '<label class="pan"><span>' +
       channel.label +
